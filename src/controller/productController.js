@@ -72,7 +72,7 @@ const getProductById = async (req, res) => {
             if (product) {
                 res.status(200).json({product});
             } else {
-                res.status(404).json({message: 'Size ait ürün bulunamadı!'});
+                res.status(404).json({message: 'Bu ürün bilgilerini görmek için yetkiniz yoktur!'});
             }
 
 
