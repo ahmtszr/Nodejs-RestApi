@@ -13,7 +13,14 @@ https://www.postgresql.org/docs/ and create your schema in database
 npm install
 ```
 
+3- Create yourself an .env file in the project home directory
+
+
+4- Fill in the .env file you created by adapting it to the .env.example file.
+
+```shell
 And it finished. Now let's complete our code and test our api in Postman or similar test tools.
+```
 
 
 
