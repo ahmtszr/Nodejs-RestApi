@@ -1,4 +1,4 @@
-// Modülleri import edelim
+// Modules import
 const express = require('express')
 const userController = require('../controller/userController')
 const { signup, login, logout} = userController

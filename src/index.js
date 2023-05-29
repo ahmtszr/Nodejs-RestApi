@@ -1,4 +1,4 @@
-// modülleri içe aktaralım
+// Modules import
 const {Sequelize, DataTypes} = require('sequelize')
 const UserModel = require('./models/userModel')
 const ProductModel = require('./models/productModel')
@@ -11,12 +11,12 @@ const sequelize = new Sequelize(`${process.env.DB_DATABASE}`, `${process.env.DB_
     dialect:"postgres"
 })
 
-//Veritabanı bağlantısını kontrol edelim.
+// We are check database connection
 try {
     sequelize.authenticate();
-    console.log('Veritabanına bağlandı');
+    console.log('Database connection successfully!');
 } catch (error) {
-    console.error('Veritabanına bağlanırken hata oluştu!')
+    console.error('Error occurred database connection!')
 }
 
 
@@ -26,10 +26,10 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 
-// modele bağlanılıyor
+// Models connection...
 db.users = UserModel(sequelize, DataTypes)
 db.products = ProductModel(sequelize, DataTypes)
 db.token = TokenModel(sequelize, DataTypes)
 
-// modülü export ediyoruz
+// Module export
 module.exports = db

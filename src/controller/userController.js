@@ -1,13 +1,13 @@
-// Modülleri import ediyoruz
+// Modules import
 const bcrypt = require('bcrypt');
 const db = require('../index');
 const jwt = require("jsonwebtoken");
 
-// Kullanıcılarını User değişkenine tanımlıyoruz
+// We define users to User variable
 const User = db.users;
 const BlacklistToken = db.token;
 
-// Kullanıcı şifresini hash liyoruz
+// We hash the user password
 const signup = async (req, res) => {
     try {
         const { userName, email, password } = req.body;
@@ -30,52 +30,52 @@ const signup = async (req, res) => {
 
             res.status(201).json({ user: userWithoutPassword });
         } else {
-            return res.status(409).send("Detaylar doğru değil!");
+            return res.status(409).send("Detail are not correct!");
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Kayıt sırasında hata oluştu.' });
+        res.status(500).json({ message: 'Error occurred during registration.' });
     }
 };
 
 
-// Kullanıcıların kimlik ve oturum bilgilerini bu değişkende tutuyoruz.
+// We keep the identity and session information of the users in this veriable
 const activeSessions = {};
 
-// Giriş kimliği doğrulaması
+// Login authentication
 const login = async (req, res) => {
 
 
     const { email, password } = req.body;
 
     try {
-        // Kullanıcının veritabanında olup olmadığını kontrol edin
+        // Check if users is in database
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ message: 'Hatalı e-posta adresi veya şifre.' });
+            return res.status(401).json({ message: 'Wrong email or password!' });
         }
 
-        // Şifre kontrolü yapın
+        // Check password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Hatalı e-posta adresi veya şifre.' });
+            return res.status(401).json({ message: 'Wrong email or password!' });
         }
 
         // Aktif oturum mevcut mu? kontrol edelim
         if (activeSessions[user.id]) {
-            return res.status(403).json({ message: 'Zaten aktif bir oturumunuz var. Lütfen çıkış yapınız!'})
+            return res.status(403).json({ message: 'You already have an active session. Please log out!'})
         }
 
         // JWT oluşturun
-        const token = jwt.sign({ id: user.id }, process.env.secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, process.env.secretKey, { expiresIn: '1m' });
 
         // Oturumu aktif etmek için kullanıcının kimlik bilgisi ile birlikte oturum nesnesini sakla
         activeSessions[user.id] = { token, userId: user.id};
 
-        res.status(200).json({ message:'Giriş başarılı!', token , userID: user.id});
+        res.status(200).json({ message:'Login successfully!', token , userID: user.id});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Giriş yapılırken hata oluştu.' });
+        res.status(500).json({ message: 'Error occurred login.' });
     }
 };
 
@@ -86,27 +86,27 @@ const logout = async (req, res) => {
         const { token } = req.body;
 
         if (!token) {
-            return res.status(400).json({message: 'Token eksik'});
+            return res.status(400).json({message: 'Token not found!'});
         }
 
-        // Tokeni kara liste (blacklist) veya geçerli tokenler listesi (whitelist) gibi bir yapıda saklayın
+        // Store the token in a structure such as a blacklist or a whitelist
         await BlacklistToken.create({ token });
 
         const userID = getUserIdFromToken(token);
         if (!userID) {
-            return res.status(401).json({ message: 'Geçersiz token'});
+            return res.status(401).json({ message: 'Invalid token'});
         }
 
         delete activeSessions[userID];
 
-        res.status(200).json({ message: 'Çıkış yapıldı.' });
+        res.status(200).json({ message: 'Logout successfully.' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Çıkış yapılırken hata oluştu.' });
+        res.status(500).json({ message: 'Error occurred logout!' });
     }
 };
 
-// Tokeni kullanarak kullanıcı kimliğini almak için yardımcı bir fonksiyon
+// A helper function to get user id using token
 const getUserIdFromToken = (token) => {
     try {
         const decodedToken = jwt.verify(token, process.env.secretKey);
