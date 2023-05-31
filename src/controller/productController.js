@@ -91,10 +91,9 @@ const deleteProduct = async (req, res) => {
     await authenticateToken(req, res, async () => {
 
         try {
-            const {userName} = req.user; // User's credential (userName)
             const productId = req.params.id; // The id of the product to be deleted
             // Get userId to check if user has access to your product
-            const user = await User.findOne({where: {userName}});
+            const user = await User.findByPk(req.user.id);
             const userId = user.id;
             const product = await Product.findOne({where: {id: productId, userId}});
 

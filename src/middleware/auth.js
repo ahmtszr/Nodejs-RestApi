@@ -11,15 +11,12 @@ const authenticateToken = async (req, res, next) => {
         return res.status(401).json({message: 'Token not found!'});
     }
     const decodedToken = jwt.verify(token, process.env.secretKey);
-    const user = await User.findByPk(decodedToken.id);
+    const user = await User.findOne({where: {id: decodedToken.id}});
 
     if (!user) {
         return res.status(401).json({message: 'Invalid token!'});
     }
-    const isTokenValid = async (token) => {
-        const blacklistedToken = await Token.findOne({where: {token}});
-        return !blacklistedToken;
-    }
+
     const isValidToken = await isTokenValid(token);
 
     if (!isValidToken) {
@@ -29,4 +26,8 @@ const authenticateToken = async (req, res, next) => {
     next();
 
 };
+const isTokenValid = async (token) => {
+    const blacklistedToken = await Token.findOne({where: {token}});
+    return !blacklistedToken;
+}
 module.exports = {authenticateToken};

@@ -83,6 +83,7 @@ const logout = async (req, res) => {
         delete activeSessions[userID];
         res.status(200).json({message: 'Logout successfully.'});
     } catch (error) {
+        console.error(error)
         res.status(500).json({message: 'Error occurred logout!'});
     }
 };
