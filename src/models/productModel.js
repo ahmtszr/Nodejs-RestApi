@@ -1,6 +1,6 @@
 //product model
 module.exports = (sequelize, DataTypes) => {
-    const Product = sequelize.define( 'product', {
+    const Product = sequelize.define('product', {
         name: {
             type: DataTypes.STRING,
             allowNull: false
@@ -21,13 +21,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         }
-    },{timestamps: true});
+    }, {timestamps: true});
     Product.associate = models => {
         Product.belongsTo(models.User, {
             foreignKey: 'userId',
             onDelete: 'CASCADE'
         });
     };
-
     return Product
-}
+};

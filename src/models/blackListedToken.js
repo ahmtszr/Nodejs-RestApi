@@ -7,6 +7,5 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
         },
     }, {timestamps: true});
-
     return BlacklistToken;
 }
