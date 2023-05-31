@@ -27,18 +27,18 @@ deleted via trigger every 7 days, 15 days or 30 days (at the end of the time per
 will share the trigger code I prepared for this with you below:
 
 ```shell
-CREATE OR REPLACE FUNCTION delete_expired_tokens()
+CREATE OR REPLACE FUNCTION <here is the name of trigger function>()
   RETURNS TRIGGER AS $$
 BEGIN
-  DELETE FROM blacklist_tokens
+  DELETE FROM <table name where you hold invalid tokens>
   WHERE "createdAt" < NOW() - INTERVAL '1 minute';
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER delete_expired_tokens_trigger
-AFTER INSERT ON blacklist_tokens
-EXECUTE FUNCTION delete_expired_tokens();
+CREATE TRIGGER <create the name of the directory where your trigger function is located>
+AFTER INSERT ON <table name where you hold invalid tokens>
+EXECUTE FUNCTION <here is the name of trigger function>();
 ```
 
 Create your trigger by typing these codes into a query page in your postgresql panel.
