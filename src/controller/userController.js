@@ -21,10 +21,6 @@ const signup = async (req, res) => {
         const user = await User.create(data);
 
         if (user) {
-            const token = jwt.sign({id: user.id}, process.env.secretKey, {
-                expiresIn: 1 * 24 * 60 * 60 * 1000,
-            });
-            res.cookie("jwt", token, {maxAge: 1 * 24 * 60 * 60, httpOnly: true});
             const userWithoutPassword = {...user.dataValues, password: password};
             res.status(201).json({user: userWithoutPassword});
         } else {
@@ -60,6 +56,8 @@ const login = async (req, res) => {
         const token = jwt.sign({id: user.id}, process.env.secretKey, {expiresIn: '1h'});
         // Store session object with user's credential to activate session
         activeSessions[user.id] = {token, userId: user.id};
+        
+        res.cookie("jwt", token, {maxAge: 1 * 24 * 60 * 60, httpOnly: true});
         res.status(200).json({message: 'Login successfully!', token, userID: user.id});
     } catch (error) {
         res.status(500).json({message: 'Error occurred login.'});
